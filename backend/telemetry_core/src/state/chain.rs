@@ -84,6 +84,7 @@ pub struct RemoveNodeResult {
 /// number of nodes to connect.
 static FIRST_PARTY_NETWORKS: Lazy<HashSet<BlockHash>> = Lazy::new(|| {
     let genesis_hash_strs = &[
+        "0x1459b0204b92719ffc978c5da3d6a2057973916bd548f8076df2064bc1cb4cfc", // Mainnet
         "0x0614f7b74a2e47f7c8d8e2a5335be84bdde9402a43f5decdec03200a87c8b943", // Testnet
     ];
 
