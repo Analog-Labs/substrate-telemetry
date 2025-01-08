@@ -31,13 +31,14 @@ jobs:
             echo "VERSION=${REF_SLUG}" >> $GITHUB_OUTPUT
           fi
           echo "set VERSION=${VERSION}"
+          echo "COMMIT_SHA_SHORT=${COMMIT_SHA_SHORT}" >> $GITHUB_OUTPUT
 
   build_backend:
     name: Build backend docker image
     runs-on: ubuntu-latest
     needs: [set-variables]
     env:
-      VERSION: ${{ needs.set-variables.outputs.VERSION }}
+      COMMIT_SHA_SHORT: ${{ needs.set-variables.outputs.COMMIT_SHA_SHORT }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
@@ -53,16 +54,16 @@ jobs:
         with:
           context: backend
           file: ./backend/Dockerfile
-          push: false
+          push: true
           tags: |
-            analoglabs/substrate-telemetry-backend:${{ env.VERSION }}
+            analoglabs/substrate-telemetry-backend:${{ env.COMMIT_SHA_SHORT }}
 
   build_frontend:
     name: Build frontend docker image
     runs-on: ubuntu-latest
     needs: [set-variables]
     env:
-      VERSION: ${{ needs.set-variables.outputs.VERSION }}
+      COMMIT_SHA_SHORT: ${{ needs.set-variables.outputs.COMMIT_SHA_SHORT }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
@@ -78,6 +79,6 @@ jobs:
         with:
           context: frontend
           file: ./frontend/Dockerfile
-          push: false
+          push: true
           tags: |
-            analoglabs/timechain-telemetry-frontend:${{ env.VERSION }}
+            analoglabs/timechain-telemetry-frontend:${{ env.COMMIT_SHA_SHORT }}
