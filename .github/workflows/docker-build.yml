@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       VERSION: ${{ steps.version.outputs.VERSION }}
+      COMMIT_SHA_SHORT: ${{ steps.version.outputs.COMMIT_SHA_SHORT }}
     steps:
       - name: Define version
         id: version
