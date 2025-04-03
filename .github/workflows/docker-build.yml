@@ -10,7 +10,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  IMAGE_NAME: parity/substrate-telemetry
+  IMAGE_NAME: analoglabs/substrate-telemetry
 
 jobs:
   set-variables:

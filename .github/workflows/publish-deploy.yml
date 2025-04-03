@@ -17,7 +17,7 @@ permissions:
   contents: read
 
 env:
-  IMAGE_NAME: parity/substrate-telemetry
+  IMAGE_NAME: analoglabs/substrate-telemetry
   APP: "substrate-telemetry"
 
 jobs:
@@ -94,48 +94,3 @@ jobs:
           tags: |
             ${{ env.IMAGE_NAME }}-frontend:${{ env.VERSION }}
 
-  deploy-stg:
-    name: Deploy Staging
-    runs-on: ubuntu-latest
-    needs: [set-variables, build_backend, build_frontend]
-    environment: parity-stg
-    env:
-      VERSION: ${{ needs.set-variables.outputs.VERSION }}
-      ARGOCD_SERVER: "argocd-stg.teleport.parity.io"
-    steps:
-      - name: Deploy to ArgoCD
-        uses: paritytech/argocd-deployment-action@main
-        with:
-          environment: "parity-stg"
-          tag: "${{ env.VERSION }}"
-          app_name: "${{ env.APP }}"
-          app_packages: "frontend,backend"
-          argocd_additional_args: "-p substrate-telemetry.image.backend.repository=docker.io/parity/substrate-telemetry-backend -p substrate-telemetry.image.frontend.repository=docker.io/parity/substrate-telemetry-frontend"
-          argocd_server: ${{ env.ARGOCD_SERVER }}
-          teleport_token: ${{ env.APP }}
-          teleport_app_name: "argocd-stg"
-          argocd_auth_token: ${{ secrets.ARGOCD_AUTH_TOKEN }}
-
-  deploy-prod:
-    name: Deploy Production
-    runs-on: ubuntu-latest
-    needs: [set-variables, deploy-stg]
-    environment: parity-prod
-    # Deploy only if the tag is v*
-    if: startsWith(github.ref, 'refs/tags/v')
-    env:
-      VERSION: ${{ needs.set-variables.outputs.VERSION }}
-      ARGOCD_SERVER: "argocd-prod.teleport.parity.io"
-    steps:
-      - name: Deploy to ArgoCD
-        uses: paritytech/argocd-deployment-action@main
-        with:
-          environment: "parity-prod"
-          tag: "${{ env.VERSION }}"
-          app_name: "${{ env.APP }}"
-          app_packages: "frontend,backend"
-          argocd_additional_args: "-p substrate-telemetry.image.backend.repository=docker.io/parity/substrate-telemetry-backend -p substrate-telemetry.image.frontend.repository=docker.io/parity/substrate-telemetry-frontend"
-          argocd_server: ${{ env.ARGOCD_SERVER }}
-          teleport_token: ${{ env.APP }}
-          teleport_app_name: "argocd-prod"
-          argocd_auth_token: ${{ secrets.ARGOCD_AUTH_TOKEN }}
